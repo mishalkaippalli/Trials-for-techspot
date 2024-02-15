@@ -18,7 +18,6 @@ const loadregister = (req, res) => {
 
 const signupadmin = (req, res) => {
   try{
-
     res.render('page-account-register');
   } catch (error) {
     console.log(error.message);

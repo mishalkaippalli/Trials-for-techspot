@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 4000 ;
 const authRouter = require("./routes/authRoute");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
+const productRouter = require("./routes/productRoute")
 dbConnect();
 
 // app.use('/', (req, res) => {
@@ -32,6 +33,8 @@ app.use(express.static(path.join(__dirname, "public")));
 console.log("In the index",__dirname);
 
 app.use("/admin", authRouter);//modified
+app.use("/admin/product", productRouter);//modified
+app.use
 
 app.use(notFound);
 app.use(errorHandler);
