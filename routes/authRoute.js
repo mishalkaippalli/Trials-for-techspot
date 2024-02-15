@@ -11,7 +11,10 @@ const { createUser,
     deleteaUser, 
     updatedUser,
     blockUser,
-    unblockUser 
+    unblockUser, 
+    handleRefreshtoken,
+    logout,
+    signupadmin
 } = require('../controller/userCtrl');
 
 
@@ -24,14 +27,21 @@ const { createUser,
 
 
 router.get('/',loadregister);
-router.post('/register',createUser);
+router.get('/signup',signupadmin);
+router.post('/signup',createUser);
 router.post("/login", loginUserCtrl)
 router.get('/all-users', getallUser)
+router.get("/refresh", handleRefreshtoken);
+router.get("/logout", logout);
+
 router.get('/:id', authMiddleware, isAdmin, getaUser);
 router.delete("/:id", deleteaUser);
 router.put("/edit-user", authMiddleware, updatedUser);
 router.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 router.put("/unblock-user/:id", authMiddleware, isAdmin, unblockUser);
+
+
+
 
 
 

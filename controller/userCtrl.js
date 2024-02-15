@@ -3,11 +3,27 @@ const {generateToken} = require("../config/jwtToken")
 const path = require("path");
 const asyncHandler = require("express-async-handler");
 const validateMongodbid = require("../utils/validateMongodbId");
+const { generateRefreshToken } = require("../config/refreshtoken");
+const jwt = require("jsonwebtoken");
 
 const loadregister = (req, res) => {
-  console.log("In the usercntl",__dirname);
-  console.log("iam inside loadregister")
-   res.render('page-login-register');
+  try{
+    console.log("In the usercntl",__dirname);
+    console.log("iam inside loadregister")
+    res.render('page-account-login');
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const signupadmin = (req, res) => {
+  try{
+
+    res.render('page-account-register');
+  } catch (error) {
+    console.log(error.message);
+  }
+  
 
 }
 
@@ -34,6 +50,18 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
   console.log(findUser);
 
   if(findUser && await findUser.isPasswordMatched(password)){
+    const refreshToken = await generateRefreshToken(findUser?._id);
+    const updateuser = await User.findByIdAndUpdate(
+      findUser.id,
+      {
+        refreshToken: refreshToken,
+      },
+      {new : true}
+    );
+    res.cookie('refreshToken', refreshToken,{
+      httpOnly:true,
+      maxAge:72 * 60 * 60 * 1000,
+    });
     res.json({
       _id: findUser?.firstname,
       lastname: findUser?.lastname,
@@ -46,6 +74,48 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     throw new Error("Invalid Credentials");
   }
  })
+
+// Handle refresh token
+const handleRefreshtoken = asyncHandler(async(req, res) => {
+  const cookie = req.cookies;
+  console.log("I am inside handlerefreshtoken",cookie);
+  if(!cookie?.refreshToken) throw new Error ('No refresh token in cookies');
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if(!user) throw new Error ('No Refresh token present in db or not matched');
+  jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
+    if(err || user.id !== decoded.id) {
+      throw new Error ("There is somehting wrong with refresh token");
+    } 
+    const  accessToken = generateToken(user?._id);
+    res.json({accessToken});
+  })
+});
+
+// logout functionality
+const logout = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  if(!cookie?.refreshToken) throw new Error ('No refresh token in cookies');
+  const refreshToken = cookie.refreshToken;
+  console.log("Iam inside logout refreshtoken: ", refreshToken);
+  const user = await User.findOne({refreshToken});
+  if(!user){
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    })
+    return res.sendStatus(204);//forbidden
+  }
+  await User.findOneAndUpdate({refreshToken}, {
+    refreshToken: "",
+  })
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+  });
+   res.sendStatus(204);//forbidden
+});
+
 
  //update a user
 const updatedUser = asyncHandler(async(req, res) => {
@@ -149,4 +219,6 @@ const unblockUser = asyncHandler(async (req, res) => {
 });
 
 module.exports = {createUser, loadregister, loginUserCtrl, getallUser,
-   getaUser, deleteaUser, updatedUser, blockUser, unblockUser};
+   getaUser, deleteaUser, updatedUser, blockUser, unblockUser, handleRefreshtoken,
+  logout, signupadmin
+  };
