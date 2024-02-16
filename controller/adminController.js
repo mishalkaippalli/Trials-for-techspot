@@ -119,7 +119,7 @@ const logout = asyncHandler(async (req, res) => {
  //update a user
 const updatedUser = asyncHandler(async(req, res) => {
   const { _id } = req.user;
-  validateMongodbid(id);
+  validateMongodbid(_id);
   console.log("Inside update user",req.user);
   try{
     const updatedUser = await User.findByIdAndUpdate(_id, 

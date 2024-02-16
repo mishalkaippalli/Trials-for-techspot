@@ -2,6 +2,16 @@ const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require('slugify');
 
+const getProductAddPage = (req, res) =>{
+    try{
+        console.log("Iam inside getproductaddpage");
+        res.render("page-form-product-1");
+    }
+    catch(error){
+        console.log(error.message);
+    }
+}
+
 const createProduct = asyncHandler(async (req, res) => {
     try{
         if(req.body.title) {
@@ -74,7 +84,8 @@ module.exports = {
     getaProduct,
     getAllProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getProductAddPage
 };
 
 

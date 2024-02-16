@@ -15,17 +15,18 @@ const { createUser,
     handleRefreshtoken,
     logout,
     signupadmin
-} = require('../controller/userCtrl');
+    } = require('../controller/adminController');
+
+const { createProduct,
+        getaProduct,
+        getAllProduct, 
+        updateProduct, 
+        deleteProduct, 
+        getProductAddPage
+     } = require('../controller/productController');
 
 
-// user_route.set('view engine','ejs');//added
-
-// user_route.set('view engine','ejs');
-// user_route.use(express.static("public"));
-// user_route.set('views', 'views/users');//added
-
-
-
+//Admin Actions
 router.get('/',loadregister);
 router.get('/signup',signupadmin);
 router.post('/signup',createUser);
@@ -33,16 +34,19 @@ router.post("/login", loginUserCtrl)
 router.get('/all-users', getallUser)
 router.get("/refresh", handleRefreshtoken);
 router.get("/logout", logout);
-
-router.get('/:id', authMiddleware, isAdmin, getaUser);
-router.delete("/:id", deleteaUser);
+// router.get('/:id', authMiddleware, isAdmin, getaUser);
+// router.delete("/:id", deleteaUser);
 router.put("/edit-user", authMiddleware, updatedUser);
 router.put("/block-user/:id", authMiddleware, isAdmin, blockUser);
 router.put("/unblock-user/:id", authMiddleware, isAdmin, unblockUser);
 
-
-
-
+//Product Management
+router.get('/addproducts',getProductAddPage)
+router.get('/getallproducts',authMiddleware, isAdmin, getAllProduct);
+router.post('/createproducts',authMiddleware, isAdmin, createProduct);
+router.get('/getaProduct/:id', getaProduct);
+router.put('/updateaProduct/:id', updateProduct);
+router.delete('/deleteaProduct/:id',authMiddleware, isAdmin, deleteProduct);
 
 
 module.exports = router;
