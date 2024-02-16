@@ -8,14 +8,11 @@ const PORT = process.env.PORT || 4000 ;
 const authRouter = require("./routes/authRoute");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
-const productRouter = require("./routes/productRoute")
+const productRouter = require("./routes/productRoute");
+const morgan = require("morgan");
 dbConnect();
 
-// app.use('/', (req, res) => {
-//     res.send("Hello from server side");
-// });
-
-// app.use(express.static(path.join(__dirname, "public")));
+app.use(morgan());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
