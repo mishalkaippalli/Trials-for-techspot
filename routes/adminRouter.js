@@ -25,6 +25,13 @@ const { createProduct,
         getProductAddPage
      } = require('../controller/productController');
 
+const { createCategory, 
+        updateCategory,
+        deleteCategory,
+        getCategory,
+        getallCategory
+     } = require('../controller/categoryController');
+
 
 //Admin Actions
 router.get('/',loadregister);
@@ -48,5 +55,11 @@ router.get('/getaProduct/:id', getaProduct);
 router.put('/updateaProduct/:id', updateProduct);
 router.delete('/deleteaProduct/:id',authMiddleware, isAdmin, deleteProduct);
 
+//Category Management
+router.post("/category",authMiddleware, isAdmin, createCategory);
+router.put("/category/update/:id:",authMiddleware, isAdmin, updateCategory);
+router.delete("/category/delete/:id",authMiddleware, isAdmin, deleteCategory);
+router.get("/category/get/:id",authMiddleware, isAdmin, getCategory);
+router.get("/category/getall",authMiddleware, isAdmin, getallCategory);
 
 module.exports = router;
