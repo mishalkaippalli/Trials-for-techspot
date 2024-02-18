@@ -22,7 +22,8 @@ const { createProduct,
         getAllProduct, 
         updateProduct, 
         deleteProduct, 
-        getProductAddPage
+        getProductAddPage,
+        uploadImages
      } = require('../controller/productController');
 
 const { createCategory, 
@@ -31,6 +32,9 @@ const { createCategory,
         getCategory,
         getallCategory
      } = require('../controller/categoryController');
+
+const brandController = require('../controller/brandController');
+const { uploadPhoto, productImgResize } = require('../middlewares/uploadImages');
 
 
 //Admin Actions
@@ -49,6 +53,8 @@ router.put("/unblock-user/:id", authMiddleware, isAdmin, unblockUser);
 
 //Product Management
 router.get('/addproducts',getProductAddPage)
+router.put("/product/upload/:id", authMiddleware, isAdmin,
+             uploadPhoto.array("images", 10),productImgResize,uploadImages);
 router.get('/getallproducts',authMiddleware, isAdmin, getAllProduct);
 router.post('/createproducts',authMiddleware, isAdmin, createProduct);
 router.get('/getaProduct/:id', getaProduct);
@@ -61,5 +67,14 @@ router.put("/category/update/:id:",authMiddleware, isAdmin, updateCategory);
 router.delete("/category/delete/:id",authMiddleware, isAdmin, deleteCategory);
 router.get("/category/get/:id",authMiddleware, isAdmin, getCategory);
 router.get("/category/getall",authMiddleware, isAdmin, getallCategory);
+
+//Brand Management
+router.get("/brands", brandController.getBrandPage);
+router.post("/brands/newbrand", brandController.addBrand);
+router.get("/brand/getallbrands", brandController.getAllBrands);
+router.put("/brands/block", brandController.blockBrand);
+router.put("/brands/unblock", brandController.unBlockBrand);
+
+
 
 module.exports = router;
