@@ -19,7 +19,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
 
-
 app.set('view engine','ejs');
 app.set('views', path.join(__dirname, "views/admin"));//added
 

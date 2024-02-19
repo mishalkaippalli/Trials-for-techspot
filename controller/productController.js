@@ -77,7 +77,7 @@ const getAllProduct = asyncHandler(async(req, res) => {
 })
 
 const uploadImages = asyncHandler(async (req, res) => {
-    console.log(req.files);
+    console.log("Iam in inside upload images",req.files);
 })
 
 
