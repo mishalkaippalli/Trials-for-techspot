@@ -1,6 +1,8 @@
 const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require('slugify');
+const validateMongodbid = require("../utils/validateMongoDbId");
+const cloudinaryUploadImg = require("../utils/cloudinary");
 
 const getProductAddPage = (req, res) =>{
     try{
@@ -77,10 +79,34 @@ const getAllProduct = asyncHandler(async(req, res) => {
 })
 
 const uploadImages = asyncHandler(async (req, res) => {
-    console.log("Iam in inside upload images",req.files);
+    const { id } = req.params;
+    validateMongodbid(id);
+    try{
+        const uploader = (path) => cloudinaryUploadImg(path, "images");
+        const urls = [];
+        const files = req.files;
+        for (const file of files) {
+            const { path } = file;
+            console.log("I am the path of the file in techspot products images", path);
+            const newpath = await uploader(path);
+            console.log("I am the new path of the file in techspot products images", path);
+            urls.push(newpath);
+        }
+        const findProduct = await Product.findByIdAndUpdate(id, 
+            {
+                images: urls.map((file) => {
+                    return file;
+                })
+            },
+            {
+                new:true,
+            }
+            );
+            res.json(findProduct);
+    }catch(error){
+        throw new Error(error)
+    }
 })
-
-
 
 
 module.exports = {

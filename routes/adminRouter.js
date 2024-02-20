@@ -3,6 +3,8 @@ const router = express.Router();
 const {authMiddleware, isAdmin} = require("../middlewares/authMiddleware");
 // const path = require("path");
 
+const adminController = require("../controller/adminController");
+
 const { createUser, 
     loadregister, 
     loginUserCtrl, 
@@ -38,10 +40,11 @@ const { uploadPhoto, productImgResize } = require('../middlewares/uploadImages')
 
 
 //Admin Actions
-router.get('/',loadregister);
+router.get('/', adminController.loadregister);
+router.post("/login", adminController.verifyLogin);
 router.get('/signup',signupadmin);
 router.post('/signup',createUser);
-router.post("/login", loginUserCtrl)
+
 router.get('/all-users', getallUser)
 router.get("/refresh", handleRefreshtoken);
 router.get("/logout", logout);

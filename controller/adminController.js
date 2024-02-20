@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const validateMongodbid = require("../utils/validateMongoDbId");
 const { generateRefreshToken } = require("../config/refreshtoken");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const loadregister = (req, res) => {
   try{
@@ -39,6 +40,34 @@ const createUser = asyncHandler(async (req, res) => {
       throw new Error("User already exists");
     }
 })
+// verify login instead of login a user in the down trial from laplux 
+
+const verifyLogin = async (req, res) => {
+  try {
+    const {email, password} = req.body;
+    console.log(email);
+
+    const findAdmin = await User.findOne({email, role: "admin"});
+
+    if(findAdmin) {
+      const passwordMatch = await bcrypt.compare(password, findAdmin.password);
+      if(passwordMatch) {
+        req.session.admin = true;
+        console.log("Admin id logged in");
+        res.redirect("/admin/dashboard");
+        res.json(findAdmin)
+      } else {
+        console.log("Password is incorect");
+        res.redirect("/admin/login")
+        
+      }
+    } else {
+      console.log("You are not an admin");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 //Loign a user
 const loginUserCtrl = asyncHandler(async (req, res) => {
@@ -219,5 +248,5 @@ const unblockUser = asyncHandler(async (req, res) => {
 
 module.exports = {createUser, loadregister, loginUserCtrl, getallUser,
    getaUser, deleteaUser, updatedUser, blockUser, unblockUser, handleRefreshtoken,
-  logout, signupadmin
+  logout, signupadmin, verifyLogin
   };

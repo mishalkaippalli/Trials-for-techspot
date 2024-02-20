@@ -13,11 +13,23 @@ const productRouter = require("./routes/productRoute");
 const morgan = require("morgan");
 dbConnect();
 
-app.use(morgan());
+const session = require("express-session");
+const nocache = require("nocache");
+
+app.use(morgan("combined"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
+app.use(session({
+    secret: process.env.SESSION_SECRET_KEY,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 72 * 60 * 60 * 1000,
+        httpOnly: true
+    }
+}))
 
 app.set('view engine','ejs');
 app.set('views', path.join(__dirname, "views/admin"));//added
